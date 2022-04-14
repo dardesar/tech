@@ -1,0 +1,46 @@
+<!-- WIDGET MARKET STATS START -->
+<div class="widget widget-market-stats widget-stats">
+
+    <div class="widget-container widget-stats__inner">
+
+        <div class="widget-stats__row">
+            <div class="widget-stats__title">
+                <div class="widget-stats__title__market-name">{{ market.name }}</div>
+                <div class="widget-stats__title__currency-name">
+                    <span class="widget-stats__title__currency-icon">
+                        <img :src="market.base_currency_logo">
+                    </span>
+                    {{ market.base_currency_name }}
+                </div>
+            </div>
+            <div class="widget-stats__price">
+                <div class="widget-stats__price-title">Last Price</div>
+                <div :class="{'color-buy' : market_stats.change > 0, 'color-sell' : market_stats.change < 0}" class="widget-stats__price-number">{{ market_stats.last }}</div>
+            </div>
+        </div>
+
+        <div class="widget-stats__row">
+            <div class="widget-stats__list">
+                <div class="widget-stats__list-item">
+                    <div class="widget-stats__list__lable-title">24h Change</div>
+                    <div :class="{'color-buy' : market_stats.change > 0, 'color-sell' : market_stats.change < 0}" class="widget-stats__list__lable-number">{{ market_stats.change }}%</div>
+                </div>
+                <div class="widget-stats__list-item">
+                    <div class="widget-stats__list__lable-title">24h High</div>
+                    <div class="widget-stats__list__lable-number">{{ market_stats.high }}</div>
+                </div>
+                <div class="widget-stats__list-item">
+                    <div class="widget-stats__list__lable-title">24h Low</div>
+                    <div class="widget-stats__list__lable-number">{{ market_stats.low }}</div>
+                </div>
+                <div class="widget-stats__list-item">
+                    <div class="widget-stats__list__lable-title">24h Volume ({{ market.base_currency }})</div>
+                    <div class="widget-stats__list__lable-number">{{ market_stats.volume }}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<!-- WIDGET MARKET STATS END -->

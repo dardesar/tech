@@ -1,0 +1,325 @@
+<app-layout>
+
+<!-- components title start -->
+<div class="components-title">
+    <h2>Deposit {{ currency.symbol }}</h2>
+</div>
+<!-- components title end -->
+
+<!-- step components start -->
+<div v-if="currency.deposit_status" class="step-components">
+    <div class="step-components__container">
+
+        <div class="step-components__block">
+            <div class="step-components__block-number">1</div>
+            <div class="step-components__block-title">Copy address</div>
+            <div class="step-components__block-text">Choose the crypto and its network on this page, and copy the deposit address.</div>
+        </div>
+        <div class="step-components__block">
+            <div class="step-components__block-number">2</div>
+            <div class="step-components__block-title">Initiate a withdrawal</div>
+            <div class="step-components__block-text">Initiate a withdrawal on the withdrawal platform.</div>
+        </div>
+        <div class="step-components__block">
+            <div class="step-components__block-number">3</div>
+            <div class="step-components__block-title">Network confirmation</div>
+            <div class="step-components__block-text">Wait for the blockchain network to confirm your transfer.</div>
+        </div>
+        <div class="step-components__block">
+            <div class="step-components__block-number">4</div>
+            <div class="step-components__block-title">Deposit successful</div>
+            <div class="step-components__block-text">After the network confirmation, our system will credit the crypto for you.</div>
+        </div>
+
+    </div>
+</div>
+<!-- step components end -->
+
+<!-- form search start -->
+<div class="form-search">
+    <div v-if="!currency.deposit_status" class="mb-20">
+        <div class="form-search__info">
+            <div class="form-search__info-icon">
+                <svg-icon icon="info"></svg-icon>
+            </div>
+            <div class="block-info__content">
+                <h4>{{ currency.symbol }} Deposits Suspended</h4>
+                <p>We have disabled deposits as our systems are currently undergoing maintenance.</p>
+            </div>
+        </div>
+    </div>
+    <div v-else class="form-search__container">
+        <div class="form-search__result">
+            <div class="form-search__result-block result-block">
+                <div class="form-search__result-item">
+                    <span>Coin</span>
+                    <p>{{ currency.name }}</p>
+                </div>
+                <div class="form-search__result-item">
+                    <span>Symbol</span>
+                    <p>{{ currency.symbol }}</p>
+                </div>
+            </div>
+            <div class="form-search__result-block">
+                <div class="form-search__result-title">Address</div>
+                <div class="form-search__result-link">
+                    <template v-if="walletData">
+                        {{ walletData.address }}
+                        <span @click="doCopy(walletData.address)" class="form-search__result-icon">
+                            <svg-icon icon="copy" classname="form-search__result-color"></svg-icon>
+                        </span>
+                        <popperVue v-if="walletData.address"
+                            :show="showQr"
+                            :options="tooltipOptions"
+                            popperClass="p-4 m-4 bg-white shadow rounded-sm transition-opacity"
+                        >
+                            <span @click="showQr = !showQr, showQrAlt = false" class="form-search__result-icon mt-1">
+                                <svg-icon icon="qr" classname="form-search__result-color" extraclass="form-search__result-color2"></svg-icon>
+                            </span>
+                            <template #popper>
+                                <qr-code :size="120" :text="walletData.address"></qr-code>
+                            </template>
+                        </popperVue>
+                    </template>
+                    <template v-else>
+                        Loading...
+                    </template>
+
+
+                </div>
+            </div>
+
+            <div v-if="walletData && walletData.paymentId" class="form-search__result-block">
+                <div class="form-search__result-title">Payment ID</div>
+                <div class="form-search__result-link">
+                    <template>
+                        {{ walletData.paymentId }}
+                        <span @click="doCopy(walletData.paymentId)" class="form-search__result-icon">
+                            <svg-icon icon="copy" classname="form-search__result-color"></svg-icon>
+                        </span>
+                        <PopperVue
+                            :arrow=true
+                            :show="showQrAlt"
+                            :options="tooltipOptions"
+                            popperClass="p-4 m-4 bg-white shadow rounded-sm transition-opacity"
+                        >
+                            <span @click="(showQrAlt = !showQrAlt, showQr = false)" class="form-search__result-icon mt-1">
+                                <svg-icon icon="qr" classname="form-search__result-color" extraclass="form-search__result-color2"></svg-icon>
+                            </span>
+                            <template #popper>
+                                <qr-code :size="120" :text="walletData.paymentId"></qr-code>
+                            </template>
+                        </PopperVue>
+                    </template>
+                </div>
+            </div>
+            <div class="form-search__result-block result-block">
+                <div class="form-search__result-item">
+                    <span>Deposit Fee</span>
+                    <p>{{ currency.deposit_fee}}%</p>
+                </div>
+                <div class="form-search__result-item">
+                    <span>Minimum deposit</span>
+                    <p>{{ currency.min_deposit}}%</p>
+                </div>
+            </div>
+            <div class="form-search__result-block result-block">
+
+            </div>
+            <div class="form-search__result-block">
+                <div class="form-search__result-title mb-3">Notes:</div>
+                <ul>
+                    <li>Send only <span class="color-sell">{{ currency.symbol }}</span> to this deposit address</li>
+                    <li v-if="currency.has_payment_id"><span class="color-sell">Payment ID</span> has to be provided for this currency, or you will lose your coins</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- form search end -->
+
+<!-- table components start -->
+<div class="table-components">
+
+    <div class="tables-subtitle mb-10"><h4>Recent Deposits</h4></div>
+
+    <!-- tables start -->
+    <table class="tables mb-10">
+
+        <!-- tbody start -->
+        <tbody class="table-list cursor-pointer">
+            <tr v-if="deposits" v-for="deposit in deposits" @click="openModal(deposit)">
+                <td>
+                    <div class="table-list__value">
+                        <div class="table-list__image"><img :src="deposit.logo"/></div>
+                        <div class="table-list__title">{{ deposit.amount }} {{ deposit.symbol }}</div>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-list__value">
+                        <div v-if="deposit.status == 'confirmed'" class="components-label label-green">
+                            Completed
+                        </div>
+                        <div v-if="deposit.status == 'pending'" class="components-label label-orange">
+                            Pending
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-list__value">
+                        <div class="table-list__text">
+                            <span class="list-text__name">Address:</span>
+                            {{ format_string(deposit.address, 10) }}
+                            <span @click.stop="doCopy(deposit.address)" class="list-text__icon">
+                                <svg-icon icon="copy" classname="list-text__icon-color"></svg-icon>
+                            </span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-list__value">
+                        <div class="table-list__text">
+                            <span class="list-text__name">Tx:</span>
+                            {{ format_string(deposit.txn, 10) }}
+                            <a v-if="deposit.explorer" @click.stop="" target="_blank" :href="deposit.explorer" class="list-text__icon">
+                                <svg-icon icon="link" classname="list-text__icon-color"></svg-icon>
+                            </a>
+                            <span @click.stop="doCopy(deposit.address)" class="list-text__icon">
+                                <svg-icon icon="copy" classname="list-text__icon-color"></svg-icon>
+                            </span>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-list__value">
+                        <div class="table-list__text">
+                            <span class="list-text__name">Date:</span>
+                            {{ deposit.created_at }}
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-list__value">
+                        <div class="table-list__text">
+                            <span class="list-text__icon">
+                                <svg-icon icon="next" classname="list-text__icon-color"></svg-icon>
+                            </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+        <!-- tbody end -->
+
+        <!-- tfood start -->
+        <tfoot class="table-result">
+            <tr>
+                <td colspan="100">
+                    <div v-if="deposits.length == 0" class="table-result__notfound">
+                        <span class="table-result__notfound-icon">
+                            <svg-icon icon="not-found" classname="color-yellow"></svg-icon>
+                        </span>
+                        <span class="table-result__notfound-text">No deposits found.</span>
+                    </div>
+                </td>
+            </tr>
+        </tfoot>
+        <!-- tfood end -->
+
+    </table>
+    <!-- tables end -->
+
+
+</div>
+<!-- table components end -->
+
+
+<!-- Show User  Modal -->
+<jet-dialog-modal :show="showDepositModal" @close="closeModal">
+    <template #title>
+        Deposit
+    </template>
+
+    <template #content>
+        <div v-if="depositModal">
+            <div class="form-search">
+                <div class="form-search__container">
+                    <div class="form-search__result">
+                        <div class="form-search__result-block">
+                            <div class="form-search__result-item">
+                                <span>Status</span>
+                                <p>
+                                    <div v-if="depositModal.status == 'confirmed'" class="components-label label-green mt-2">
+                                        Completed
+                                    </div>
+                                    <div v-if="depositModal.status == 'pending'" class="components-label label-orange mt-2">
+                                        Pending
+                                    </div>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="form-search__result-block">
+                            <div class="form-search__result-item">
+                                <span>Coin</span>
+                                <p>{{ depositModal.currency }}</p>
+                            </div>
+                        </div>
+                        <div class="form-search__result-block">
+                            <div class="form-search__result-item">
+                                <span>Symbol</span>
+                                <p>{{ depositModal.symbol }}</p>
+                            </div>
+                        </div>
+                        <div class="form-search__result-block">
+                            <div class="form-search__result-title">Address</div>
+                            <div class="form-search__result-link">
+                                {{ depositModal.address }}
+                                <span @click="doCopy(depositModal.address)" class="form-search__result-icon">
+                                    <svg-icon icon="copy" classname="form-search__result-color"></svg-icon>
+                                </span>
+                            </div>
+                        </div>
+                        <div v-if="depositModal.payment_id" class="form-search__result-block">
+                            <div class="form-search__result-title">Payment ID</div>
+                            <div class="form-search__result-link">
+                                {{ depositModal.payment_id }}
+                                <span @click="doCopy(depositModal.payment_id)" class="form-search__result-icon">
+                                    <svg-icon icon="copy" classname="form-search__result-color"></svg-icon>
+                                </span>
+                            </div>
+                        </div>
+                        <div v-if="depositModal.txn" class="form-search__result-block">
+                            <div class="form-search__result-title">TXN</div>
+                            <div class="form-search__result-link">
+                                {{ depositModal.txn}}
+                                <span @click="doCopy(depositModal.txn)" class="form-search__result-icon">
+                                    <svg-icon icon="copy" classname="form-search__result-color"></svg-icon>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="form-search__result-block result-block">
+                            <div class="form-search__result-item">
+                                <span>Deposit Fee</span>
+                                <p>{{ depositModal.system_fee}} {{ currency.symbol }}</p>
+                            </div>
+                        </div>
+                        <div class="form-search__result-block result-block">
+                            <div class="form-search__result-item">
+                                <span>Date</span>
+                                <p>{{ depositModal.created_at}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template #footer>
+        <jet-secondary-button @click.native="closeModal">
+            Close
+        </jet-secondary-button>
+    </template>
+</jet-dialog-modal>
+
+</app-layout>

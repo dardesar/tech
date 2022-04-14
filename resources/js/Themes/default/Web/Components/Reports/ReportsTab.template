@@ -1,0 +1,31 @@
+
+<!-- tabs components start -->
+<div class="tabs">
+
+    <!-- tabs left start -->
+    <div class="tabs-left">
+        <div class="tabs-nav" >
+            <div @click="setReport('reports.trades')" class="tabs-nav__item" :class="{'tabs-nav__active': section == 'trades'}">
+                <h4>Trades</h4>
+            </div>
+            <div @click="setReport('reports.deposits')" class="tabs-nav__item" :class="{'tabs-nav__active': section == 'deposits'}">
+                <h4>Crypto Deposits</h4>
+            </div>
+            <div @click="setReport('reports.withdrawals')" class="tabs-nav__item" :class="{'tabs-nav__active': section == 'withdrawals'}">
+                <h4>Crypto Withdrawals</h4>
+            </div>
+            <div @click="setReport('reports.deposits.fiat')" class="tabs-nav__item" :class="{'tabs-nav__active': section == 'fiat_deposits'}">
+                <h4>Fiat Deposits</h4>
+            </div>
+            <div @click="setReport('reports.withdrawals.fiat')" class="tabs-nav__item" :class="{'tabs-nav__active': section == 'fiat_withdrawals'}">
+                <h4>Fiat Withdrawals</h4>
+            </div>
+            <div @click="setReport('reports.referral-transactions')" class="tabs-nav__item" :class="{'tabs-nav__active': section == 'referrals'}">
+                <h4>Referrals</h4>
+            </div>
+        </div>
+    </div>
+    <!-- tabs left end -->
+
+</div>
+<!-- tabs components end -->

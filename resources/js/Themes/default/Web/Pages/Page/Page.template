@@ -1,0 +1,16 @@
+<app-layout>
+    <div class="table-components page-section">
+
+        <!-- components title start -->
+        <div class="components-title">
+            <h1>{{ page.title }}</h1>
+        </div>
+        <!-- components title end -->
+
+        <div class="min-h-screen page-section-content">
+            <div v-html="cleanMessage" class="w-full mt-10 prose"></div>
+        </div>
+
+    </div>
+
+</app-layout>

@@ -1,0 +1,48 @@
+
+
+@import "./components/components";
+@import "./blocks/blocks";
+@import "./pages/pages";
+@import "./settings/setting";
+
+
+
+/** Font global start */
+body {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    color: var(--blue-dark-color);
+    background-color: var(--sixth-color);
+}
+/** Font global start */
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+.main-logo {
+    max-width: 130px;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/** Color global start */
+.color-sell {
+    color: var(--red-color);
+}
+
+.color-buy {
+    color: var(--green-color);
+}
+
+.color-default {
+    color: var(--blue-dark-color);
+}
+/** Color global end */

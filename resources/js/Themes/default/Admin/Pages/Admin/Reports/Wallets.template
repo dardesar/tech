@@ -1,0 +1,74 @@
+<app-layout>
+    <admin-reports-tab :referrer="filters.referrer" section="wallets"></admin-reports-tab>
+    <h1 class="mt-10 mb-8 font-bold text-3xl">
+        <inertia-link class="text-indigo-400 hover:text-indigo-600" :href="route('admin.users.edit', filters.referrer)" v-if="filters.referrer">Go Back - </inertia-link> User Wallets
+    </h1>
+    <div class="mb-6 flex justify-between items-center">
+        <search-filter v-model="form.search" class="w-full max-w-md mr-4 focus:outline-none" @reset="reset">
+            <label class="block text-gray-700">Wallets:</label>
+            <select v-model="form.type" class="mt-1 w-full form-select rounded">
+                <option value="all">All</option>
+                <option value="balance">With Balance Only</option>
+            </select>
+        </search-filter>
+    </div>
+    <div class="bg-white rounded shadow overflow-x-auto">
+        <table class="w-full whitespace-no-wrap">
+            <tr class="text-left font-bold">
+                <th class="px-3 pt-6 pb-4">Currency</th>
+                <th class="px-3 pt-6 pb-4">Address</th>
+                <th class="px-3 pt-6 pb-4">Wallet</th>
+                <th class="px-3 pt-6 pb-4">In Orders</th>
+                <th class="px-3 pt-6 pb-4">Pending Withdraw</th>
+                <th class="px-3 pt-6 pb-4">User</th>
+            </tr>
+            <tr v-for="wallet in wallets.data" :key="wallet.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+                <td class="border-t">
+                    <span class="px-3 py-2 flex items-center">
+                        {{ wallet.currency.symbol }}
+                    </span>
+                </td>
+                <td class="border-t">
+                    <span class="px-3 py-2 flex items-center">
+                        <div v-if="wallet.currency.type == 'fiat'">
+                            {{ '' }}
+                        </div>
+                        <div v-else-if="wallet.address">
+                            {{ format_string(wallet.address.address, 10) }}
+                            <font-awesome-icon class="ml-2 cursor-pointer" icon="copy" @click="doCopy(wallet.address.address)" />
+                        </div>
+                        <div v-else>
+                            <badge class="mr-2" type="gray">
+                                {{ 'Not generated yet' }}
+                            </badge>
+                        </div>
+                    </span>
+                </td>
+                <td class="border-t">
+                    <span class="px-3 py-2 flex items-center">
+                        {{ wallet.balance_in_wallet }} {{ wallet.currency.symbol }}
+                    </span>
+                </td>
+                <td class="border-t">
+                    <span class="px-3 py-2 flex items-center">
+                        {{ wallet.balance_in_order }} {{ wallet.currency.symbol }}
+                    </span>
+                </td>
+                <td class="border-t">
+                    <span class="px-3 py-2 flex items-center">
+                        {{ wallet.balance_in_withdraw }} {{ wallet.currency.symbol }}
+                    </span>
+                </td>
+                <td class="border-t">
+                    <span class="px-3 py-2 flex items-center">
+                        {{ wallet.user.email }}
+                    </span>
+                </td>
+            </tr>
+            <tr v-if="wallets.data.length === 0">
+                <td class="border-t px-3 py-2" colspan="100">No wallets found.</td>
+            </tr>
+        </table>
+    </div>
+    <pagination :links="wallets.links" />
+</app-layout>

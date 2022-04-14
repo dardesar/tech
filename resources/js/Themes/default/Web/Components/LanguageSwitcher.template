@@ -1,0 +1,8 @@
+<div class="component-language-switcher">
+    <h3>Language:</h3>
+    <div class="component-language">
+        <ul>
+            <li v-for="(slug, name) in $page.props.languages" @click="switchLanguage(slug)">{{ name }}</li>
+        </ul>
+    </div>
+</div>
